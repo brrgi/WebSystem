@@ -1,0 +1,25 @@
+div{
+    text-align:center;
+    width:256px;
+}
+
+.myClass1{
+    font-size:small;
+    background-color:#34eb49;
+}
+.myClass2{
+    font-size:xx-large;
+    background-color:#ff0000;
+}
+#leere{
+    font-size:medium;
+    background-color:#95fcf4;
+}
+/*	다음과 같은 조건을 만족하는 HTML과 CSS를 작성한다.*/
+/*	HTML은 <div> 태그들로 구성 되어있다.*/
+/*	첫 번째(“Lab2”), 세 번째(”section2”) <div>는 다음 Class를 가진다.*/
+/*-	myClass1: “font-size: small”, ” background-color: #34eb49”*/
+/*	두 번째(”section1”), 네 번째(”section3”) <div> 는 다음 Class를 가진다.*/
+/*-	myClass2: ” font-size: xx-large”, ” background-color: #ff0000”*/
+/*	다섯 번째(”Implemented by 본인 이름”) <div> 는 다음 Id를 가진다.*/
+/*-	myId: “font-size: medium”, ” background-color: #95fcf4”*/
