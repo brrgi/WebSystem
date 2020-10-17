@@ -18,10 +18,10 @@
     <h2>?</h2>
     <p>$</p>
     <script type="text/javascript">
-        function readfile(link){
-            const form=document.createElement('form');      //form tag만들고
-            form.method='post';                             //http 메소드 명시
-            form.action='http://localhost:3000/readfile';   //도착할 URL
+        function readfile(link){                                //이거 읽을 때
+            const form=document.createElement('form');          //form tag만들고
+            form.method='post';                                 //http 메소드 명시
+            form.action='http://localhost:3000/readfile';       //도착할 URL
             const hiddenField=document.createElement('input');  //input tag만들고
             hiddenField.type='hidden';                          //숨겨진 입력 filed
             hiddenField.name='file_name';                       //이름

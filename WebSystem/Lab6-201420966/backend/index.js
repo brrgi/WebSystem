@@ -9,11 +9,11 @@ var cur_path=path.resolve('../fs');     //file module
 var file_name='';
 var file_content='';
 
-var app = http.createServer(function(request,response){
+var app = http.createServer(function(request,response){     //작업 시작
     var _url=request.url;
     var queryData=url.parse(_url, true).query;
     var pathname=url.parse(_url, true).pathname;
-    if(pathname==='/')
+    if(pathname==='/')      //렌더링 부분 : 서버의 html 읽고 구분자들 채움
     {
         fs.readFile("../frontend/template.html", function(err, tmpl){
             fs.readdir(cur_path, function(err,data){
