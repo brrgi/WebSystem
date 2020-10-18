@@ -4,32 +4,227 @@
     <meta charset="UTF-8">
     <title>Node.js</title>
 </head>
+<style>
+    table {
+        width: 100%;
+        text-align: left;
+        border-top: 1px solid #444444;
+        border-collapse: collapse;
+    }
+    th, td {
+        border-bottom: 1px solid #444444;
+        padding: 10px;
+    }
+
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content/Box */
+    .modal-content {
+        float: left;
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%; /* Could be more or less, depending on screen size */
+    }
+    /* The Close Button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
 <body>
-    <h1><a href="/">Node.js</a></h1>
-    <ul>
-        <li>%</li>
-    </ul>
-    <p>Create file</p>
-    <form action="http://localhost:3000/writefile" method="POST">
+<h1><a href="/">Node.js</a></h1>
+<ul>
+<!--    @-->
+</ul>
+
+<button id="myBtnOne">폴더생성</button>
+<!-- The Modal -->
+<div id="myModalOne" class="modal">
+    <!-- Modal content -->
+    <form class="modal-content" action="http://localhost:3000/mkdir" method="POST">
+        <span class="close">&times;</span>
+        <p>폴더생성</p>
+        <input name="title" type="text">
+        <input type="submit" value="폴더생성">
+    </form>
+</div>
+
+<button id="myBtn">파일생성</button>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <form class="modal-content" action="http://localhost:3000/writefile" method="POST">
+        <span class="close">&times;</span>
+        <p>파일편집</p>
         <input name="title" type="text">
         <textarea name="description" type="text"></textarea>
-        <input type="submit" value="create file">
+        <input type="submit" value="파일생성">
     </form>
-    <h2>?</h2>
-    <p>$</p>
-    <script type="text/javascript">
-        function readfile(link){                                //이거 읽을 때
-            const form=document.createElement('form');          //form tag만들고
-            form.method='post';                                 //http 메소드 명시
-            form.action='http://localhost:3000/readfile';       //도착할 URL
-            const hiddenField=document.createElement('input');  //input tag만들고
-            hiddenField.type='hidden';                          //숨겨진 입력 filed
-            hiddenField.name='file_name';                       //이름
-            hiddenField.value=link.textContent;                 //값
-            form.appendChild(hiddenField);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    </script>
+</div>
+
+<button id="myBtnTwo">이름바꾸기</button>
+<!-- The Modal -->
+<div id="myModalTwo" class="modal">
+    <!-- Modal content -->
+    <form class="modal-content">
+        <span class="close">&times;</span>
+        <p>이름바꾸기</p>
+        <input name="titleTwo" type="text">
+        <textarea name="descriptionTwo" type="hidden"></textarea>
+        <input type="submit" value="이름바꾸기">
+    </form>
+</div>
+
+<table id="#myTable">
+    <tr>
+        <th width="30%">Name</th>
+        <th width="10%"></th>
+        <th width="10%"></th>
+        <th width="20%">file size</th>
+        <th width="30%">Modification date</th>
+    </tr>
+    <tr width="100%">
+        <th name=".." onclick="cd(this)">..</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    <h5></h5>
+</table>
+
+<h2>?</h2>
+<p>$</p>
+<script type="text/javascript">                             //참고 : https://ifuwanna.tistory.com/196
+    function readfile(link){                                //이거 읽을 때
+        const form=document.createElement('form');          //form tag만들고
+        form.method='post';                                 //http 메소드 명시
+        form.action='http://localhost:3000/readfile';       //도착할 URL
+        const hiddenField=document.createElement('input');  //input tag만들고
+        hiddenField.type='hidden';                          //숨겨진 입력 filed
+        hiddenField.name='file_name';                       //이름
+        hiddenField.value=link.textContent;                 //값
+
+        form.appendChild(hiddenField);                      //append input to form
+        document.body.appendChild(form);                    //append form to body
+        form.submit();                                      //submit form
+    }
+/*
+1. 디렉토리 이동 요청 함수
+2. 디렉토리 삭제 함수
+3. 파일 삭제 함수
+4. 이름 변경 요청 함수
+ */
+    function cd(link){
+        //submit form
+        const form=document.createElement('form');          //form tag만들고
+        form.method='post';                                 //http 메소드 명시
+        form.action='http://localhost:3000/cd';       //도착할 URL
+        const hiddenField=document.createElement('input');  //input tag만들고
+        hiddenField.type='hidden';                          //숨겨진 입력 filed
+        hiddenField.name='file_name';                       //이름
+        hiddenField.value=link.textContent;                 //값
+
+        form.appendChild(hiddenField);                      //append input to form
+        document.body.appendChild(form);                    //append form to body
+        form.submit();                                      //submit form
+    }
+function rmdir(link){
+    //submit form
+    const form=document.createElement('form');          //form tag만들고
+    form.method='post';                                 //http 메소드 명시
+    form.action='http://localhost:3000/rmdir';       //도착할 URL
+    const hiddenField=document.createElement('input');  //input tag만들고
+    hiddenField.type='hidden';                          //숨겨진 입력 filed
+    hiddenField.name='file_name';                       //이름
+    hiddenField.value=link.textContent;                 //값
+
+    form.appendChild(hiddenField);                      //append input to form
+    document.body.appendChild(form);                    //append form to body
+    form.submit();                                      //submit form
+}
+function rmFile(link){
+    //submit form
+    const form=document.createElement('form');          //form tag만들고
+    form.method='post';                                 //http 메소드 명시
+    form.action='http://localhost:3000/rmFile';       //도착할 URL
+    const hiddenField=document.createElement('input');  //input tag만들고
+    hiddenField.type='hidden';                          //숨겨진 입력 filed
+    hiddenField.name='file_name';                       //이름
+    hiddenField.value=link.textContent;                 //값
+
+    form.appendChild(hiddenField);                      //append input to form
+    document.body.appendChild(form);                    //append form to body
+    form.submit();                                      //submit form
+}
+
+function rename(link){
+    //submit form
+    const form=document.createElement('form');          //form tag만들고
+    form.method='post';                                 //http 메소드 명시
+    form.action='http://localhost:3000/rename';       //도착할 URL
+    const hiddenField=document.createElement('input');  //input tag만들고
+    hiddenField.type='hidden';                          //숨겨진 입력 filed
+    hiddenField.name='file_name';                       //이름
+    hiddenField.value=link.textContent;                 //값
+
+    form.appendChild(hiddenField);                      //append input to form
+    document.body.appendChild(form);                    //append form to body
+    form.submit();                                      //submit form
+}
+
+var modalOne = document.getElementById('myModalOne');
+var btnOne = document.getElementById("myBtnOne");
+var modal = document.getElementById('myModal');
+var btn = document.getElementById("myBtn");
+var spanOne = document.getElementsByClassName("close")[0];
+var span = document.getElementsByClassName("close")[1];
+btnOne.onclick = function() {
+    modalOne.style.display = "block";
+}
+window.onclick = function(event) {
+    if (event.target == modalOne) {
+        modalOne.style.display = "none";
+    }
+}
+spanOne.onclick = function() {
+    modalOne.style.display = "none";
+}
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+
+</script>
 </body>
 </html>
