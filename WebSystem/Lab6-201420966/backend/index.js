@@ -26,21 +26,31 @@ var app = http.createServer(function(request,response){     //작업 시작
         fs.readFile("../frontend/template.html", function(err, tmpl){
             fs.readdir(cur_path, function(err,data){
                 lsinfo='';
-                data.forEach(function(element){
-                    lsinfo+="<tr>"
-                    lsinfo+="   <td onclick='cd(this);'>" +element+"</td>";
-                    lsinfo+="   <td onclick='rmFile(this);'>" +"delete"+"</td>";
-                    lsinfo+="   <td onclick='rename(this);'>" +"rename"+"</td>";
-                    lsinfo+="   <td>" +"file size"+"</td>";
-                    lsinfo+="   <td>" +todays+"</td>";
-                    lsinfo+="</tr>"
-                })
-                console.log("이게 뭐냐",this);
-                let html = tmpl.toString().replace('<h5></h5>',lsinfo);
-                html=html.replace("?", file_name);
-                html=html.replace("$", file_content);
-                response.writeHead(200, {'Content-Type': 'text/html'}); //type을 결정. html파일을 웹에 띄워준다고 생각
-                response.end(html);     //end 메소드를 이용해 html파일이나 소스를 포냄
+                if (err){
+                    let html = tmpl.toString();
+                    html=html.replace("?", file_name);
+                    html=html.replace("$", file_content);
+                    response.writeHead(200, {'Content-Type': 'text/html'}); //type을 결정. html파일을 웹에 띄워준다고 생각
+                    response.end(html);     //end 메소드를 이용해 html파일이나 소스를 포냄
+                }
+                else{
+                    data.forEach(function(element){
+                        lsinfo+="<tr>"
+                        lsinfo+="   <td onclick='cd(this);'>" +element+"</td>";
+                        lsinfo+="   <td onclick='rmdir(this);'>" +"delete"+"</td>";
+                        lsinfo+="   <td onclick='rename(this);'>" +"rename"+"</td>";
+                        lsinfo+="   <td>" +"file size"+"</td>";
+                        lsinfo+="   <td>" +todays+"</td>";
+                        lsinfo+="</tr>"
+                    })
+                    console.log("이게 뭐냐",this);
+                    let html = tmpl.toString().replace('<h5></h5>',lsinfo);
+                    html=html.replace("?", file_name);
+                    html=html.replace("$", file_content);
+                    response.writeHead(200, {'Content-Type': 'text/html'}); //type을 결정. html파일을 웹에 띄워준다고 생각
+                    response.end(html);     //end 메소드를 이용해 html파일이나 소스를 포냄
+                }
+
             })
         })
     }
@@ -95,9 +105,7 @@ var app = http.createServer(function(request,response){     //작업 시작
         request.on('end', function(){
             var post = qs.parse(body);
             file_name=post.file_name;
-            console.log("보여주시오 : ", cur_path , file_name,typeof(cur_path), typeof(file_name));
             cur_path=path.join(cur_path, file_name);
-            console.log("보여주시오 : ", cur_path);
             response.writeHead(302, {Location: 'http://localhost:3000/'});
             response.end('success');
         });
@@ -124,9 +132,15 @@ var app = http.createServer(function(request,response){     //작업 시작
         });
         request.on('end', function(){
             var post = qs.parse(body);
-            var title=post.title;
-            var file_path=path.join(cur_path, title);
-            fs.rmdir(file_path, function(err){
+            file_name=post.file_name;
+            cur_path=path.join(cur_path, file_name);
+            fs.rmdir(cur_path, function(err){
+                if (err){
+                    fs.unlink(cur_path, function(err){
+                        response.writeHead(302, {Location: 'http://localhost:3000/'});
+                        response.end('success');
+                    });
+                }
                 response.writeHead(302, {Location: 'http://localhost:3000/'});
                 response.end('success');
             });
@@ -139,8 +153,8 @@ var app = http.createServer(function(request,response){     //작업 시작
         });
         request.on('end', function(){
             var post = qs.parse(body);
-            var title=post.title;
-            var file_path=path.join(cur_path, title);
+            file_name=post.file_name;
+            cur_path=path.join(cur_path, file_name);
             fs.unlink(file_path, function(err){
                 response.writeHead(302, {Location: 'http://localhost:3000/'});
                 response.end('success');
