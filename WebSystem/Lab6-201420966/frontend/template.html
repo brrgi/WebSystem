@@ -15,7 +15,12 @@
         border-bottom: 1px solid #444444;
         padding: 10px;
     }
-
+    .folder{
+        background-color: #bbdefb;
+    }
+    .file{
+        background-color: #bbfbf9;
+    }
     .modal {
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
@@ -83,24 +88,12 @@
     </form>
 </div>
 
-<button id="myBtnTwo">이름바꾸기</button>
-<!-- The Modal -->
-<div id="myModalTwo" class="modal">
-    <!-- Modal content -->
-    <form class="modal-content">
-        <span class="close">&times;</span>
-        <p>이름바꾸기</p>
-        <input name="titleTwo" type="text">
-        <textarea name="descriptionTwo" type="hidden"></textarea>
-        <input type="submit" value="이름바꾸기">
-    </form>
-</div>
 
 <table id="#myTable">
     <tr>
         <th width="30%">Name</th>
-        <th width="10%"></th>
-        <th width="10%"></th>
+        <th width="10%">파일삭제</th>
+        <th width="10%">이름변경</th>
         <th width="20%">file size</th>
         <th width="30%">Modification date</th>
     </tr>
@@ -149,16 +142,17 @@
         document.body.appendChild(form);                    //append form to body
         form.submit();                                      //submit form
     }
+
     function rmdir(link){
         //submit form
+        const hi = link.getAttribute("value");
         const form=document.createElement('form');          //form tag만들고
         form.method='post';                                 //http 메소드 명시
-        form.action='http://localhost:3000/rmdir';       //도착할 URL
+        form.action='http://localhost:3000/rmdir';          //도착할 URL
         const hiddenField=document.createElement('input');  //input tag만들고
         hiddenField.type='hidden';                          //숨겨진 입력 filed
         hiddenField.name='file_name';                       //이름
-        hiddenField.value=link.textContent;                 //값
-
+        hiddenField.value=hi;                       //값
         form.appendChild(hiddenField);                      //append input to form
         document.body.appendChild(form);                    //append form to body
         form.submit();                                      //submit form
@@ -167,8 +161,9 @@
         //submit form
         const form=document.createElement('form');          //form tag만들고
         form.method='post';                                 //http 메소드 명시
-        form.action='http://localhost:3000/rmFile';       //도착할 URL
+        form.action='http://localhost:3000/rmFile';         //도착할 URL
         const hiddenField=document.createElement('input');  //input tag만들고
+        hiddenField.id='ids';
         hiddenField.type='hidden';                          //숨겨진 입력 filed
         hiddenField.name='file_name';                       //이름
         hiddenField.value=link.textContent;                 //값
@@ -177,20 +172,32 @@
         document.body.appendChild(form);                    //append form to body
         form.submit();                                      //submit form
     }
-
     function rename(link){
         //submit form
+        const hi = link.getAttribute("value");
         const form=document.createElement('form');          //form tag만들고
         form.method='post';                                 //http 메소드 명시
         form.action='http://localhost:3000/rename';       //도착할 URL
+
+        const input=document.createElement("input");
+        input.name='files_name';
+        input.type='text';
+        input.value=hi;
+
         const hiddenField=document.createElement('input');  //input tag만들고
         hiddenField.type='hidden';                          //숨겨진 입력 filed
         hiddenField.name='file_name';                       //이름
-        hiddenField.value=link.textContent;                 //값
+        hiddenField.value=hi;                               //값
 
+        const buttons=document.createElement('input');
+        buttons.type='submit';
+        buttons.value='이름바꾸기';
+
+        form.appendChild(input);
         form.appendChild(hiddenField);                      //append input to form
+        form.appendChild(buttons);
         document.body.appendChild(form);                    //append form to body
-        form.submit();                                      //submit form
+
     }
 
 var modalOne = document.getElementById('myModalOne');
@@ -202,6 +209,7 @@ var span = document.getElementsByClassName("close")[1];
 btnOne.onclick = function() {
     modalOne.style.display = "block";
 }
+
 window.onclick = function(event) {
     if (event.target == modalOne) {
         modalOne.style.display = "none";

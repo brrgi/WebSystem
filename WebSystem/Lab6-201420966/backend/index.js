@@ -8,9 +8,8 @@ var cur_path=path.resolve('../fs');     //file module
 
 var file_name='';
 var file_content='';
-
+var dictObject={};
 var today = new Date();
-
 var year = today.getFullYear(); // 년도
 var month = today.getMonth() + 1;  // 월
 var date = today.getDate();  // 날짜
@@ -33,17 +32,32 @@ var app = http.createServer(function(request,response){     //작업 시작
                     response.writeHead(200, {'Content-Type': 'text/html'}); //type을 결정. html파일을 웹에 띄워준다고 생각
                     response.end(html);     //end 메소드를 이용해 html파일이나 소스를 포냄
                 }
+
                 else{
-                    data.forEach(function(element){
-                        lsinfo+="<tr>"
-                        lsinfo+="   <td onclick='cd(this);'>" +element+"</td>";
-                        lsinfo+="   <td onclick='rmdir(this);'>" +"delete"+"</td>";
-                        lsinfo+="   <td onclick='rename(this);'>" +"rename"+"</td>";
-                        lsinfo+="   <td>" +"file size"+"</td>";
-                        lsinfo+="   <td>" +todays+"</td>";
-                        lsinfo+="</tr>"
+                    function getFileSize(filename) {
+                        let stats = fs.statSync(filename);
+                        let {size} = stats;
+                        let i = Math.floor(Math.log(size) / Math.log(1024));
+                        if (isNaN((size / Math.pow(1024, i)).toFixed(2) * 1)===true){
+                            return '-';
+                        }
+                        return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
+                    }
+
+                        data.forEach(function(element){
+                            if (getFileSize(path.join(cur_path,element))==='-'){
+                                lsinfo+="<tr class='folder'>"
+                            }
+                            else{
+                                lsinfo+="<tr class='file'>"
+                            }
+                            lsinfo+="   <td onclick='cd(this);'>" +element+"</td>";
+                            lsinfo+=`   <td onclick='rmdir(this);' value = "${element}">` +'delete'+"</td>";
+                            lsinfo+=`   <td onclick='rename(this);' value = "${element}">` +'rename'+"</td>";
+                            lsinfo+="   <td>" +getFileSize(path.join(cur_path,element))+"</td>";
+                            lsinfo+="   <td>" +todays+"</td>";
+                            lsinfo+="</tr>"
                     })
-                    console.log("이게 뭐냐",this);
                     let html = tmpl.toString().replace('<h5></h5>',lsinfo);
                     html=html.replace("?", file_name);
                     html=html.replace("$", file_content);
@@ -133,6 +147,7 @@ var app = http.createServer(function(request,response){     //작업 시작
         request.on('end', function(){
             var post = qs.parse(body);
             file_name=post.file_name;
+            files_name=post.files_name;
             cur_path=path.join(cur_path, file_name);
             fs.rmdir(cur_path, function(err){
                 if (err){
@@ -168,9 +183,11 @@ var app = http.createServer(function(request,response){     //작업 시작
         });
         request.on('end', function(){
             var post = qs.parse(body);
-            var title=post.title;
-            var file_path=path.join(cur_path, title);
-            fs.rename(file_path, file_path,function(err){           //!!!!!!!!!!수정 필요 !!!!!!!!!!!!!!!!1
+            file_name=post.file_name;
+            var files_name=post.files_name;
+            var next_path=path.join(cur_path, file_name);
+
+            fs.rename(path.join(cur_path, file_name), path.join(cur_path, files_name),function(err){           //!!!!!!!!!!수정 필요 !!!!!!!!!!!!!!!!1
                 response.writeHead(302, {Location: 'http://localhost:3000/'});
                 response.end('success');
             });
